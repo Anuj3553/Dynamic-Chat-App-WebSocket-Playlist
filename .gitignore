@@ -1,0 +1,17 @@
+# Node.js
+.env
+node_modules
+.DS_Store
+# Logs
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# Build output
+dist
+# Dependency directories
+jspm_packages
+# Optional npm cache directory
+.npm
+# Optional eslint cache
+.eslintcache
