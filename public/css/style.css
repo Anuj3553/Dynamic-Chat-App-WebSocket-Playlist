@@ -10897,8 +10897,8 @@ a[data-toggle="collapse"] {
 
 .subscribe-form .form-control {
   background: #4897fc;
-}
 
+}
 .cursor-pointer {
   cursor: pointer !important;
 }
@@ -10916,4 +10916,12 @@ a[data-toggle="collapse"] {
 
 .chat-section {
   display: none;
+}
+
+.online-status {
+  color: green;
+}
+
+.offline-status {
+  color: red;
 }

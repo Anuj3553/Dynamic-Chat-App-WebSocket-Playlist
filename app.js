@@ -31,6 +31,11 @@ usp.on('connection', async function (socket) {
         }
     )
 
+    // user broadcasts online status
+    socket.broadcast.emit('getOnlineUser', {
+        user_id: userId,
+    })
+
     socket.on('disconnect', async function () {
         console.log("user disconnected");
 
@@ -44,9 +49,14 @@ usp.on('connection', async function (socket) {
                 }
             }
         )
+
+        // user broadcasts offline status
+        socket.broadcast.emit('getOfflineUser', {
+            user_id: userId,
+        })
     });
 });
 
 http.listen(3000, function () {
-    console.log('Server is running on port http://localhost:3000/');
+    console.log('Server is running on port http://localhost:3000');
 });
