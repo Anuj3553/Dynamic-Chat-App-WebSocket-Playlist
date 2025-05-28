@@ -34,6 +34,13 @@
 </div>
 
 <script>
+    var socket_id = '<%= user._id %>';
+    let socket = io('/user-namespace', {
+        auth: {
+            token: '<%= user._id %>',
+        }
+    });
+
     $(document).ready(function() {
         $('.user-list').click(function() {
             $('.start-head').hide();
