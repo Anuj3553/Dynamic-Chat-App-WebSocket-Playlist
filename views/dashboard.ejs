@@ -56,6 +56,11 @@
                 receiver_id = $(this).attr('data-id');
                 $('.start-head').hide();
                 $('.chat-section').show();
+
+                socket.emit('existsChat', {
+                    sender_id: sender_id,
+                    receiver_id: receiver_id
+                })
             });
 
             // Handle form submit
@@ -91,7 +96,7 @@
             });
 
             socket.on('loadNewChat', function (data) {
-                if(sender_id == data.receiver_id && receiver_id == data.sender_id) {
+                if (sender_id == data.receiver_id && receiver_id == data.sender_id) {
                     let html = `
                     <div class="distance-user-chat">
                         <h5>${data.message}</h5>
@@ -99,6 +104,34 @@
                     `;
                     $('#chat-container').append(html);
                 }
+            });
+
+            // Load old chats
+            socket.on('loadChats', function (data) {
+                $('#chat-container').html(''); // Clear previous chats
+
+                let chats = data.chats;
+
+                let html = '';
+
+                for (let x = 0; x < chats.length; x++) {
+
+                    let addClass = '';
+
+                    if (chats[x]['sender_id'] == sender_id) {
+                        addClass = 'current-user-chat';
+                    } else {
+                        addClass = 'distance-user-chat';
+                    }
+
+                    // Append chat messages
+                    html += `
+                        <div class="${addClass}">
+                            <h5>${chats[x].message}</h5>
+                        </div>
+                    `;
+                }
+                $('#chat-container').append(html); // Append all chats at once
             });
 
             // Online/offline status updates

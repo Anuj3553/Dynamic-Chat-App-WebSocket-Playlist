@@ -10,6 +10,7 @@ const http = require('http').Server(app);
 
 const userRoute = require('./routes/userRoute.js');
 const User = require('./models/userModel.js');
+const Chat = require('./models/chatModel.js');
 
 app.use('/', userRoute)
 
@@ -60,6 +61,26 @@ usp.on('connection', async function (socket) {
     socket.on('newChat', function (data) {
         socket.broadcast.emit('loadNewChat', data);
     });
+
+    // Load previous chats
+    socket.on('existsChat', async function (data) {
+        let chats = await Chat.find({
+            $or: [
+                {
+                    sender_id: data.sender_id,
+                    receiver_id: data.receiver_id
+                },
+                {
+                    sender_id: data.receiver_id,
+                    receiver_id: data.sender_id
+                }
+            ]
+        })
+
+        socket.emit('loadChats', {
+            chats: chats
+        });
+    })
 });
 
 http.listen(3000, function () {
