@@ -1,7 +1,6 @@
 <%- include('layouts/header.ejs') %>
 
-    <h2 class="mb-4">Hyy, <%= user.name %>
-    </h2>
+    <h2 class="mb-4">Welcome, <%= user.name %></h2>
 
     <div class="row">
         <div class="col-md-4">
@@ -88,6 +87,8 @@
                             `;
                             $('#chat-container').append(html); // Fixed selector
                             socket.emit('newChat', response.data);
+
+                            scrollChat(); // Scroll to the bottom after sending a message
                         } else {
                             alert(response.msg);
                         }
@@ -104,6 +105,8 @@
                     `;
                     $('#chat-container').append(html);
                 }
+
+                scrollChat(); // Scroll to the bottom after receiving a new chat
             });
 
             // Load old chats
@@ -132,6 +135,8 @@
                     `;
                 }
                 $('#chat-container').append(html); // Append all chats at once
+
+                scrollChat(); // Scroll to the bottom after loading chats
             });
 
             // Online/offline status updates
@@ -147,6 +152,12 @@
                     .addClass('offline-status');
             });
         });
+
+        function scrollChat(){
+            $('#chat-container').animate({
+                scrollTop: $('#chat-container').offset().top + $('#chat-container')[0].scrollHeight
+            }, 0);
+        }
     </script>
 
 
