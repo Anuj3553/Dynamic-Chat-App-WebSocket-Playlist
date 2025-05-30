@@ -1,4 +1,5 @@
 const User = require('../models/userModel.js')
+const Chat = require('../models/chatModel.js');
 const bcrypt = require('bcrypt');
 
 const registerLoad = async (req, res) => {
@@ -35,6 +36,7 @@ const loadLogin = async (req, res) => {
         console.log(error.message)
     }
 }
+
 const login = async (req, res) => {
     try {
         const email = req.body.email;
@@ -53,7 +55,7 @@ const login = async (req, res) => {
             }
         }
         else {
-            res.render('login', {message: 'Invalid Email or Password!'});
+            res.render('login', { message: 'Invalid Email or Password!' });
         }
 
 
@@ -61,6 +63,7 @@ const login = async (req, res) => {
         console.log(error.message)
     }
 }
+
 const logout = async (req, res) => {
     try {
         req.session.destroy();
@@ -70,16 +73,37 @@ const logout = async (req, res) => {
         console.log(error.message)
     }
 }
+
 const loadDashboard = async (req, res) => {
     try {
         let users = await User.find({ _id: { $nin: [req.session.user._id] } })
 
         res.render('dashboard', {
-           user: req.session.user,
-           users: users
+            user: req.session.user,
+            users: users
         });
     } catch (error) {
         console.log(error.message)
+    }
+}
+
+const saveChat = async (req, res) => {
+    try {
+        let chat = new Chat({
+            sender_id: req.body.sender_id,
+            receiver_id: req.body.receiver_id,
+            message: req.body.message
+        });
+
+        let newChat = await chat.save();
+
+        res.status(200).send({
+            success: true,
+            msg: 'Message sent successfully!',
+            data: newChat
+        });
+    } catch (error) {
+        res.status(400).send({ success: false, msg: error.message });
     }
 }
 
@@ -89,5 +113,6 @@ module.exports = {
     loadLogin,
     login,
     logout,
-    loadDashboard
+    loadDashboard,
+    saveChat
 }

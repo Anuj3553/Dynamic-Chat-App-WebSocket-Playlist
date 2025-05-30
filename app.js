@@ -55,6 +55,11 @@ usp.on('connection', async function (socket) {
             user_id: userId,
         })
     });
+
+    // Chatting functionality
+    socket.on('newChat', function (data) {
+        socket.broadcast.emit('loadNewChat', data);
+    });
 });
 
 http.listen(3000, function () {
