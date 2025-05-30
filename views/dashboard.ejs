@@ -1,6 +1,7 @@
 <%- include('layouts/header.ejs') %>
 
-    <h2 class="mb-4">Welcome, <%= user.name %></h2>
+    <h2 class="mb-4">Welcome, <%= user.name %>
+    </h2>
 
     <div class="row">
         <div class="col-md-4">
@@ -33,6 +34,29 @@
                 <form action="" id="chat-form">
                     <input type="text" name="message" id="message" class="border" placeholder="Enter Message" required>
                     <input type="submit" value="Send Message" class="btn btn-primary">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteChatModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="exampleModalLongTitle">Delete Chat</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form id="delete-chat-form">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="delete-message-id">
+                        <p>Are you sure you want to delete below message?</p>
+                        <p><b id="delete-message"></b></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -81,8 +105,11 @@
                             $('#message').val('');
                             let chat = response.data.message;
                             let html = `
-                            <div class="current-user-chat">
-                                <h5>${chat}</h5>
+                            <div class="current-user-chat" id='`+ response.data._id + `'>
+                                <h5>
+                                    `+ chat + `
+                                    <i class="fa fa-trash" aria-hidden="true" data-id='` + response.data._id + `' data-bs-toggle="modal" data-bs-target="#deleteChatModal"></i>
+                                </h5>
                             </div>
                             `;
                             $('#chat-container').append(html); // Fixed selector
@@ -99,7 +126,7 @@
             socket.on('loadNewChat', function (data) {
                 if (sender_id == data.receiver_id && receiver_id == data.sender_id) {
                     let html = `
-                    <div class="distance-user-chat">
+                    <div class="distance-user-chat" id='` + data._id + `'>
                         <h5>${data.message}</h5>
                     </div>
                     `;
@@ -129,9 +156,17 @@
 
                     // Append chat messages
                     html += `
-                        <div class="${addClass}">
-                            <h5>${chats[x].message}</h5>
-                        </div>
+                        <div class='`+ addClass + `' id='` + chats[x]['_id'] + `'>
+                            <h5>
+                                `+ chats[x]['message'] + ``;
+                    if (chats[x]['sender_id'] == sender_id) {
+                        html += `<i class="fa fa-trash" aria-hidden="true" data-id='` + chats[x]['_id'] + `' data-bs-toggle="modal" data-bs-target="#deleteChatModal"></i>`;
+                    }
+
+                    html += `
+                        <h5>
+                        </h5>
+                    </div>
                     `;
                 }
                 $('#chat-container').append(html); // Append all chats at once
@@ -153,11 +188,46 @@
             });
         });
 
-        function scrollChat(){
+        function scrollChat() {
             $('#chat-container').animate({
                 scrollTop: $('#chat-container').offset().top + $('#chat-container')[0].scrollHeight
             }, 0);
         }
+
+        // delete chat work
+        $(document).on('click', '.fa-trash', function () {
+            let msg = $(this).parent().text();
+            $('#delete-message').text(msg);
+            $('#delete-message-id').val($(this).attr('data-id'));
+        });
+
+        $('#delete-chat-form').submit(function (e) {
+            e.preventDefault();
+
+            let id = $('#delete-message-id').val();
+
+            $.ajax({
+                url: '/delete-chat',
+                type: 'POST',
+                data: {
+                    id: id
+                },
+                success: function (response) {
+                    if (response.success == true) {
+                        $('#' + id).remove(); // Remove the chat message from the DOM
+                        $('#deleteChatModal').modal('hide'); // Hide the modal
+                        socket.emit('chatDeleted', id); // Notify other users about the deletion
+                    } else {
+                        alert(response.msg);
+                    }
+                } 
+            });
+        });
+
+
+        socket.on('chatMessageDeleted', function (id) {
+            $('#' + id).remove(); // Remove the chat message from the DOM
+        });
     </script>
 
 
