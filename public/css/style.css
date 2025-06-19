@@ -10942,3 +10942,8 @@ a[data-toggle="collapse"] {
   color: red;
   cursor: pointer;
 }
+
+.fa-edit {
+  color: blue;
+  cursor: pointer;
+}

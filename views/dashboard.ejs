@@ -39,6 +39,7 @@
         </div>
     </div>
 
+    <!-- Delete Chat Modal -->
     <div class="modal fade" id="deleteChatModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -56,6 +57,30 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Chat Modal -->
+    <div class="modal fade" id="editChatModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="exampleModalLongTitle">Edit Chat</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form id="update-chat-form">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="edit-message-id">
+                        <input type="text" name="message" id="update-message" class="border" placeholder="Enter Message"
+                            required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
                     </div>
                 </form>
             </div>
@@ -106,9 +131,9 @@
                             let chat = response.data.message;
                             let html = `
                             <div class="current-user-chat" id='`+ response.data._id + `'>
-                                <h5>
-                                    `+ chat + `
+                                <h5><span>`+ chat + `</span>
                                     <i class="fa fa-trash" aria-hidden="true" data-id='` + response.data._id + `' data-bs-toggle="modal" data-bs-target="#deleteChatModal"></i>
+                                    <i class="fa fa-edit" aria-hidden="true" data-id='` + response.data._id + `' data-msg='` + chat + `' data-bs-toggle="modal" data-bs-target="#editChatModal"></i>
                                 </h5>
                             </div>
                             `;
@@ -157,10 +182,12 @@
                     // Append chat messages
                     html += `
                         <div class='`+ addClass + `' id='` + chats[x]['_id'] + `'>
-                            <h5>
-                                `+ chats[x]['message'] + ``;
+                            <h5><span>`+ chats[x]['message'] + `</span></h5>`;
                     if (chats[x]['sender_id'] == sender_id) {
-                        html += `<i class="fa fa-trash" aria-hidden="true" data-id='` + chats[x]['_id'] + `' data-bs-toggle="modal" data-bs-target="#deleteChatModal"></i>`;
+                        html += `
+                        <i class="fa fa-trash" aria-hidden="true" data-id='` + chats[x]['_id'] + `' data-bs-toggle="modal" data-bs-target="#deleteChatModal"></i>
+                        <i class="fa fa-edit" aria-hidden="true" data-id='` + chats[x]['_id'] + `' data-msg='` + chats[x]['message'] + `' data-bs-toggle="modal" data-bs-target="#editChatModal"></i>
+                    `;
                     }
 
                     html += `
@@ -201,6 +228,7 @@
             $('#delete-message-id').val($(this).attr('data-id'));
         });
 
+        // Handle delete chat form submission
         $('#delete-chat-form').submit(function (e) {
             e.preventDefault();
 
@@ -220,13 +248,51 @@
                     } else {
                         alert(response.msg);
                     }
-                } 
+                }
             });
         });
 
-
+        // Listen for chat deletions from the server
         socket.on('chatMessageDeleted', function (id) {
             $('#' + id).remove(); // Remove the chat message from the DOM
+        });
+
+        // update user chat functionality
+        $(document).on('click', '.fa-edit', function () {
+            let msg = $(this).attr('data-msg');
+            $('#update-message').val(msg);
+            $('#edit-message-id').val($(this).attr('data-id'));
+        });
+
+        $('#update-chat-form').submit(function (e) {
+            e.preventDefault();
+
+            let id = $('#edit-message-id').val();
+            let msg = $('#update-message').val();
+
+            $.ajax({
+                url: '/update-chat',
+                type: 'POST',
+                data: {
+                    id: id,
+                    message: msg
+                },
+                success: function (response) {
+                    if (response.success == true) {
+                        $('#editChatModal').modal('hide'); // Hide the modal
+                        $('#' + id).find('span').text(msg); // Update the chat message in the DOM
+                        $('#' + id).find('.fa-edit').attr('data-msg', msg); // Update the data-msg attribute
+                        socket.emit('chatUpdated', { id: id, message: msg }); // Notify other users about the update
+                    } else {
+                        alert(response.msg);
+                    }
+                }
+            });
+        });
+
+        // Listen for chat updates from the server
+        socket.on('chatMessageUpdated', function (data) {
+            $('#' + data.id).find('span').text(data.message); // Update the chat message in the DOM
         });
     </script>
 
