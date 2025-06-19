@@ -12,6 +12,9 @@ user_route.use(session({
     saveUninitialized: false,
 }));
 
+const cookieParser = require('cookie-parser');
+user_route.use(cookieParser());
+
 user_route.use(bodyParser.json());
 user_route.use(bodyParser.urlencoded({ extended: true }));
 

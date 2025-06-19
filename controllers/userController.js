@@ -49,6 +49,7 @@ const login = async (req, res) => {
 
             if (passwordMatch) {
                 req.session.user = userData;
+                res.cookie(`user`, JSON.stringify(userData));
                 res.redirect('/dashboard');
             } else {
                 res.render('login', { message: 'Invalid Email or Password' });
@@ -66,6 +67,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
+        res.clearCookie('user');
         req.session.destroy();
         res.redirect('/');
 
