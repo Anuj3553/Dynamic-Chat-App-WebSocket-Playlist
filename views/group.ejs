@@ -1,0 +1,47 @@
+<%- include('layouts/header.ejs') %>
+
+    <h2 class="mb-4">Groups</h2>
+
+    <div class="container">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+            Create Group
+        </button>
+
+        <% if(typeof message !=='undefined' ) { %>
+            <p style="color:green">
+                <%= message %>
+            </p>
+            <% } %>
+
+                <div class="modal fade" id="createGroupModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title" id="exampleModalLongTitle">Create Group</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+
+                            <form action="" enctype="multipart/form-data" method="POST">
+                                <div class="modal-body">
+                                    <input type="text" name="name" placeholder="Enter Group Name" class="w-100"
+                                        required>
+                                    <input type="file" name="image" class="w-100" required>
+                                    <input type="number" min="1" placeholder="Enter User Limit" name="limit"
+                                        class="w-100" required>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Create Group</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+    </div>
+
+    <%- include('layouts/footer.ejs') %>

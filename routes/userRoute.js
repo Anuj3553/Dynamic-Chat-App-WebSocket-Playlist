@@ -55,4 +55,7 @@ user_route.post('/save-chat', userController.saveChat);
 user_route.post('/delete-chat', userController.deleteChat);
 user_route.post('/update-chat', userController.updateChat);
 
+user_route.get('/groups', auth.isLogin, userController.loadGroups);
+user_route.post('/groups', upload.single('image'), userController.createGroup);
+
 module.exports = user_route;
