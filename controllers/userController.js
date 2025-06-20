@@ -143,7 +143,11 @@ const updateChat = async (req, res) => {
 
 const loadGroups = async (req, res) => {
     try {
-        res.render('group', { user: req.session.user });
+        const groups = await Group.find({ creator_id: req.session.user._id });
+        res.render('group', {
+            user: req.session.user,
+            groups: groups
+        });
     } catch (error) {
         console.log(error.message)
     }
@@ -160,9 +164,12 @@ const createGroup = async (req, res) => {
 
         await group.save();
 
+        const groups = await Group.find({ creator_id: req.session.user._id });
+
         res.render('group', {
             success: true,
-            message: req.body.name + ' Group created successfully!'
+            message: req.body.name + ' Group created successfully!',
+            groups: groups
         });
     } catch (error) {
         console.log(error.message);
