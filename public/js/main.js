@@ -274,3 +274,28 @@ $('.addMember').click(function () {
 		}
 	})
 })
+
+// add members form submit
+$('#add-member-form').submit(function (e) {
+	e.preventDefault();
+
+	let formData = $(this).serialize();
+	$.ajax({
+		url: '/add-member',
+		type: 'POST',
+		data: formData,
+		success: function (res) {
+			if (res.success) {
+				$('#add-member-form')[0].reset();
+				$('#memberModal').modal('hide');
+				alert(res.msg);
+			}
+		}, error: function (err) {
+			console.log(err);
+			$('#add-member-error').text(err.responseJSON.msg);
+			setTimeout(function () {
+				$('#add-member-error').text("");
+			}, 3000);
+		}
+	});
+});
