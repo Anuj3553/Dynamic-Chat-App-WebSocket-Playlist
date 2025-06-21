@@ -10947,3 +10947,9 @@ a[data-toggle="collapse"] {
   color: blue;
   cursor: pointer;
 }
+
+.addMemberTable {
+  overflow-y: auto;
+  height: 100px;
+  width: 100%;
+}

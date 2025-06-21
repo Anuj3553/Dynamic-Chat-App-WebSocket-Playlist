@@ -43,7 +43,9 @@
                                         <%= groups[i].limit %>
                                     </td>
                                     <td>
-                                        <a href="#">Members</a>
+                                        <a class="cursor-pointer addMember" data-id="<%= groups[i]._id %>"
+                                            data-limit="<%= groups[i].limit %>" data-bs-toggle="modal"
+                                            data-bs-target="#memberModal">Members</a>
                                     </td>
                                     <td>
                                     </td>
@@ -55,6 +57,51 @@
                                     <% } %>
                     </tbody>
                 </table>
+
+                <!-- Member Modal -->
+                <div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title" id="exampleModalLongTitle">Members</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+
+                            <form action="" id="add-member-form">
+                                <div class="modal-body">
+                                    <input type="hidden" name="group_id" id="group_id">
+                                    <input type="hidden" name="limit" id="limit">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Select</th>
+                                                <th>Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <div class="addMemberTable">
+                                                        <table class="table addMembersInTable">
+                                                        </table>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Update Member</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Modal -->
                 <div class="modal fade" id="createGroupModal" tabindex="-1" aria-labelledby="exampleModalLabel"

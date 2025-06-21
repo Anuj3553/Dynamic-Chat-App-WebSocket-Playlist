@@ -58,4 +58,6 @@ user_route.post('/update-chat', userController.updateChat);
 user_route.get('/groups', auth.isLogin, userController.loadGroups);
 user_route.post('/groups', upload.single('image'), userController.createGroup);
 
+user_route.post('/get-member', auth.isLogin, userController.getMembers);
+
 module.exports = user_route;

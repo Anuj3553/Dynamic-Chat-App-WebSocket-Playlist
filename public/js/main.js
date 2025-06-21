@@ -236,3 +236,41 @@ $('#update-chat-form').submit(function (e) {
 socket.on('chatMessageUpdated', function (data) {
 	$('#' + data.id).find('span').text(data.message); // Update the chat message in the DOM
 });
+
+// add member js
+$('.addMember').click(function () {
+	let id = $(this).attr('data-id');
+	let limit = $(this).attr('data-limit');
+
+	$('#group_id').val(id);
+	$('#limit').val(limit);
+
+	$.ajax({
+		url: '/get-member',
+		type: 'POST',
+		data: { group_id: id },
+		success: function (res) {
+			if (res.success == true) {
+				let users = res.data;
+				let html = '';
+
+				for (let i = 0; i < users.length; i++) {
+					html += `
+					<tr>
+						<td>
+							<input type="checkbox" name="members[]" value="` + users[i]['_id'] + `" />
+						</td>
+						<td>
+							` + users[i]['name'] + `
+						</td>
+					</tr>
+					`;
+				}
+
+				$('.addMembersInTable').html(html);
+			} else {
+				alert(res.msg);
+			}
+		}
+	})
+})
